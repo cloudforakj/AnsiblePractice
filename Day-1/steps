@@ -1,0 +1,25 @@
+setup ansible on server
+create common user - give sudo priviliges to it.
+generate public key for server
+copy public keys indivudal nodes
+
+Add the nodes in ansible inventory - /etc/ansible/hosts
+
+Adhoc commands using various modules
+ansible all -m command -a "ls"
+ansible all -m command -a "ls"
+ansible all -m command -a "ls -la"
+ansible -m command -a "touch myfile"
+ansible all -m command -a "touch myfile"
+ansible all -m command -a "ls"
+ansible all -a "sudo yum install httpd -y"
+ansible all -a "yum install tree -y" -b
+touch devopsfile
+ansible all -b -m copy -a "src=devopsfile dest=/tmp/"
+ansible all -a "ls /tmp/"
+
+ansible all -b -m yum -a "pkg=httpd state=latest"
+ansible all -b -m service -a "name=httpd state=started"
+
+ansible all -m setup
+ansaible all -m ping
