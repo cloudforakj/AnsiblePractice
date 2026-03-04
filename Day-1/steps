@@ -23,3 +23,7 @@ ansible all -b -m service -a "name=httpd state=started"
 
 ansible all -m setup
 ansaible all -m ping
+
+
+to check calidaty of ansible playbook: 
+ansible-playbook <filename> --check / --syntax-check

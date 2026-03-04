@@ -1,0 +1,36 @@
+---
+- name: This is sample playbook
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install httpd package
+      yum:
+        name: httpd
+        state: installed
+      when: ansible_os_family == "RedHat"
+      notify: Start httpd
+
+    - name: Install apache2 package
+      apt:
+        name: apache2
+        state: installed
+      when: ansible_os_family == "Debian"
+      notify: Start apache2
+
+  handlers:
+    - name: Start apache2
+      service:
+        name: apache2
+        state: started
+      when:
+        - ansible_os_family == "Debian"
+        - not ansible_check_mode
+
+    - name: Start httpd
+      service:
+        name: httpd
+        state: started
+      when:
+        - ansible_os_family == "RedHat"
+        - not ansible_check_mode

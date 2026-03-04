@@ -1,0 +1,11 @@
+---
+- name: My Test playbook
+  hosts: all
+  become: true
+  tasks:
+    - name: Copy a file
+      Copy:
+        src: /Users/aashishjha/Documents/Devops/Ansible/Day-3/index.html
+        dest: /home/ansadmin
+        mode: 0600
+        owner: ansadmin

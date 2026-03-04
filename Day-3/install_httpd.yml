@@ -1,0 +1,13 @@
+---
+- name: This is my sample playbook
+  hosts: all
+  become: true
+  tasks:
+    - name: Install httpd package
+      yum:
+        name: httpd
+        state: installed
+    - name: Start httpd
+      service:
+        name: httpd
+        state: started
