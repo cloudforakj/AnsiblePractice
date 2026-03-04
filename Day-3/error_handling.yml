@@ -1,0 +1,47 @@
+---
+- name: Web Server Setup with Handlers
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install httpd on RedHat
+      yum:
+        name: httpd
+        state: present
+      when: ansible_os_family == "RedHat"
+      notify: Restart httpd
+
+    - name: Install apache2 on Debian
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+      notify: Restart apache2
+
+    - name: Copy index.html
+      copy:
+        src: /Users/aashishjha/Documents/Devops/Ansible/Day-3/index.html
+        dest: /var/www/html/index.html
+        mode: "0644"
+      notify:
+        - Restart httpd
+        - Restart apache2
+
+  handlers:
+    - name: Restart httpd
+      service:
+        name: httpr
+        state: restarted
+      when:
+        - ansible_os_family == "RedHat"
+        - not ansible_check_mode
+      ignore_errors: yes
+
+    - name: Restart apache2
+      service:
+        name: apache2
+        state: restarted
+      when:
+        - ansible_os_family == "Debian"
+        - not ansible_check_mode

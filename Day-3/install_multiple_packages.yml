@@ -1,0 +1,9 @@
+---
+- name: This is sample playbook to install multiple packages as same task
+  hosts: all
+  become: true
+  tasks:
+    - name: Install packages
+      yum:
+        name: ["httpd", "php"]
+        state: installed

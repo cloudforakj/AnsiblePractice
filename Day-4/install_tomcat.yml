@@ -1,0 +1,59 @@
+---
+- name: setup tomcat
+  hosts: all
+  become: true
+
+  vars:
+    tomcat_version: "11.0.2"
+    tomcat_download_url: "https://archive.apache.org/dist/tomcat/tomcat-11/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    tomcat_install_dir: "/opt/apache-tomcat-{{ tomcat_version }}"
+    tomcat_tar: "/opt/apache-tomcat-{{ tomcat_version }}.tar.gz"
+
+  tasks:
+    - name: Install java on RedHat
+      yum:
+        name: java
+        state: present
+      when: ansible_facts["os_family"] == "RedHat"
+
+    - name: Install java on Debian
+      apt:
+        name: default-jdk
+        state: present
+        update_cache: yes
+      when: ansible_facts["os_family"] == "Debian"
+
+    - name: Download Tomcat
+      get_url:
+        url: "{{ tomcat_download_url }}"
+        dest: "{{ tomcat_tar }}"
+        mode: "0644"
+
+    - name: Extract Tomcat only if not extracted
+      unarchive:
+        src: "{{ tomcat_tar }}"
+        dest: /opt
+        remote_src: yes
+        creates: "{{ tomcat_install_dir }}"
+      when: not ansible_check_mode
+
+    - name: Set executable permissions
+      file:
+        path: "{{ tomcat_install_dir }}/bin/startup.sh"
+        mode: "0755"
+      when: not ansible_check_mode
+
+    - name: Check if Tomcat is running
+      shell: pgrep -f tomcat
+      register: tomcat_status
+      ignore_errors: yes
+      changed_when: false
+      when: not ansible_check_mode
+
+    - name: Start Tomcat if not running
+      shell: nohup ./startup.sh
+      args:
+        chdir: "{{ tomcat_install_dir }}/bin"
+      when:
+        - tomcat_status.rc != 0
+        - not ansible_check_mode
